@@ -223,7 +223,7 @@ header {
     text-transform: uppercase;
 }
 
-.filter-input {
+.filter-input, .filter-select {
     background: rgba(0, 0, 0, 0.2);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 8px;
@@ -232,11 +232,17 @@ header {
     font-size: 0.9rem;
     outline: none;
     transition: all 0.3s;
+    cursor: pointer;
 }
 
-.filter-input:focus {
+.filter-input:focus, .filter-select:focus {
     border-color: var(--accent);
     background: rgba(0, 0, 0, 0.4);
+}
+
+.filter-select option {
+    background: #1e1e2e;
+    color: white;
 }
 
 .btn-reset-filters {

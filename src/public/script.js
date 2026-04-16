@@ -600,37 +600,55 @@ async function fetchLogs() {
     try {
         const res = await fetch('/api/logs');
         allLogs = await res.json();
+        updateLogFilterOptions();
         applyLogFilters();
     } catch (e) {
         console.error("Errore recupero log:", e);
     }
 }
 
+function updateLogFilterOptions() {
+    const actionSelect = document.getElementById('filter-log-action');
+    const userSelect = document.getElementById('filter-log-user');
+    
+    // Salva i valori correnti per non perderli durante l'aggiornamento
+    const currentAction = actionSelect.value;
+    const currentUser = userSelect.value;
+    
+    const uniqueActions = [...new Set(allLogs.map(l => l.action))].sort();
+    const uniqueUsers = [...new Set(allLogs.map(l => l.user))].sort();
+    
+    actionSelect.innerHTML = '<option value="">Tutte le azioni</option>';
+    uniqueActions.forEach(act => {
+        actionSelect.innerHTML += `<option value="${act}" ${act === currentAction ? 'selected' : ''}>${act}</option>`;
+    });
+    
+    userSelect.innerHTML = '<option value="">Tutti gli utenti</option>';
+    uniqueUsers.forEach(u => {
+        userSelect.innerHTML += `<option value="${u}" ${u === currentUser ? 'selected' : ''}>${u}</option>`;
+    });
+}
+
 function applyLogFilters() {
-    const searchText = document.getElementById('filter-log-text').value.toLowerCase().trim();
-    const searchUser = document.getElementById('filter-log-user').value.toLowerCase().trim();
+    const filterAction = document.getElementById('filter-log-action').value;
+    const filterUser = document.getElementById('filter-log-user').value;
     const searchDate = document.getElementById('filter-log-date').value;
-    const searchHour = document.getElementById('filter-log-hour').value;
 
     const filtered = allLogs.filter(log => {
         const parts = log.timestamp.split(', ');
         let matchDate = true;
-        let matchHour = true;
 
-        if (parts.length >= 2) {
+        if (parts.length >= 2 && searchDate) {
             const datePart = parts[0];
-            const timePart = parts[1];
             const [day, month, year] = datePart.split('/');
             const isoDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-            if (searchDate) matchDate = (isoDate === searchDate);
-            if (searchHour) matchHour = timePart.startsWith(searchHour.padStart(2, '0') + ':');
+            matchDate = (isoDate === searchDate);
         }
 
-        const actionText = (log.action + ' ' + (log.details || '')).toLowerCase();
-        const matchText = !searchText || actionText.includes(searchText);
-        const matchUser = !searchUser || log.user.toLowerCase().includes(searchUser);
+        const matchAction = !filterAction || log.action === filterAction;
+        const matchUser = !filterUser || log.user === filterUser;
 
-        return matchText && matchUser && matchDate && matchHour;
+        return matchAction && matchUser && matchDate;
     });
 
     renderLogsUI(filtered);
@@ -1017,16 +1035,14 @@ initCustomTimePicker('cron-time-trigger', 'cron-time-popup', 'cfg-cron-time', 'c
 switchTab('tab-users');
 
 // AGGIORNAMENTO REMOTO (OTA)
-document.getElementById('filter-log-text').addEventListener('input', applyLogFilters);
-document.getElementById('filter-log-user').addEventListener('input', applyLogFilters);
+document.getElementById('filter-log-action').addEventListener('change', applyLogFilters);
+document.getElementById('filter-log-user').addEventListener('change', applyLogFilters);
 document.getElementById('filter-log-date').addEventListener('change', applyLogFilters);
-document.getElementById('filter-log-hour').addEventListener('input', applyLogFilters);
 
 document.getElementById('btn-reset-log-filters').addEventListener('click', () => {
-    document.getElementById('filter-log-text').value = '';
+    document.getElementById('filter-log-action').value = '';
     document.getElementById('filter-log-user').value = '';
     document.getElementById('filter-log-date').value = '';
-    document.getElementById('filter-log-hour').value = '';
     applyLogFilters();
 });
 document.getElementById('btn-remote-update').addEventListener('click', async () => {

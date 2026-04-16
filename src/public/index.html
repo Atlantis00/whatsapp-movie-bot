@@ -338,26 +338,28 @@
                 <div class="card">
                     <div class="card-header">
                         <h2 class="card-title">Cronologia Operazioni</h2>
-                        <button id="btn-refresh-logs" class="btn-mini">🔄 Aggiorna</button>
                     </div>
                     <div class="log-filter-bar">
                         <div class="filter-group">
-                            <label>Cerca Azione/Dettagli:</label>
-                            <input type="text" id="filter-log-text" class="filter-input" placeholder="Es. Login, NGrok...">
+                            <label>Filtra Azione:</label>
+                            <select id="filter-log-action" class="filter-select">
+                                <option value="">Tutte le azioni</option>
+                            </select>
                         </div>
                         <div class="filter-group">
                             <label>Utente:</label>
-                            <input type="text" id="filter-log-user" class="filter-input" placeholder="Es. Atlantis">
+                            <select id="filter-log-user" class="filter-select">
+                                <option value="">Tutti gli utenti</option>
+                            </select>
                         </div>
-                        <div class="filter-group" style="min-width: 140px;">
+                        <div class="filter-group" style="max-width: 150px;">
                             <label>Giorno:</label>
                             <input type="date" id="filter-log-date" class="filter-input">
                         </div>
-                        <div class="filter-group" style="min-width: 80px;">
-                            <label>Ora (HH):</label>
-                            <input type="number" id="filter-log-hour" class="filter-input" min="0" max="23" placeholder="00-23">
+                        <div style="display: flex; gap: 8px; align-items: flex-end;">
+                            <button id="btn-refresh-logs" class="btn-reset-filters" style="margin-top: 0; color: #60a5fa; border-color: rgba(59, 130, 246, 0.2); background: rgba(59, 130, 246, 0.05);">🔄 Aggiorna</button>
+                            <button id="btn-reset-log-filters" class="btn-reset-filters" style="margin-top: 0;">Reset</button>
                         </div>
-                        <button id="btn-reset-log-filters" class="btn-reset-filters">Reset</button>
                     </div>
 
                     <div class="table-container">

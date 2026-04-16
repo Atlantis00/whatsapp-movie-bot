@@ -22,5 +22,17 @@
       "logs": true,
       "admins": true
     }
+  },
+  {
+    "username": "Ilaria",
+    "password": "Ilaria",
+    "roleName": "Nigga",
+    "permissions": {
+      "users": true,
+      "settings": true,
+      "stories": true,
+      "logs": true,
+      "admins": true
+    }
   }
 ]
