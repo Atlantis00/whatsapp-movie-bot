@@ -1,0 +1,32 @@
+{
+  "name": "whatsapp-movie-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@ngrok/ngrok": "^1.7.0",
+    "axios": "^1.15.0",
+    "cheerio": "^1.2.0",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "express-basic-auth": "^1.2.1",
+    "express-session": "^1.19.0",
+    "helmet": "^8.1.0",
+    "node-cron": "^4.2.1",
+    "qrcode": "^1.5.4",
+    "qrcode-terminal": "^0.12.0",
+    "socket.io": "^4.8.3",
+    "whatsapp-web.js": "^1.34.6"
+  },
+  "devDependencies": {
+    "innosetup-compiler": "^6.3.1"
+  }
+}

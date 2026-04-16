@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Cinema Famiglia</title>
+    <link href="style.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-main">
+                <div class="brand">
+                    <h1>WhatsApp Bot 🍿</h1>
+                    <div id="connection-status" class="status-badge offline">Offline</div>
+                    <div id="remote-access-container" class="remote-box" style="display: none;">
+                        <span class="pulse-dot"></span>
+                        <span id="remote-label">Remoto</span>
+                        <button id="btn-copy-remote" class="btn-mini">📋 Copia</button>
+                    </div>
+                </div>
+                
+                <div class="user-profile">
+                    <div class="user-info">
+                        <span id="current-username" class="username-display">Caricamento...</span>
+                        <span id="current-role" class="role-display">---</span>
+                    </div>
+                    <button id="btn-logout" class="btn-logout-new">Esci</button>
+                </div>
+            </div>
+            
+            <div class="header-actions">
+                <div class="bot-controls">
+                    <button id="btn-restart-bot" class="btn-system btn-restart">Riavvia</button>
+                    <button id="btn-stop-bot" class="btn-system btn-stop">Arresta</button>
+                    <button onclick="window.open('https://wa.me/393497426155', '_blank')" class="btn-system btn-help">Aiuto</button>
+                </div>
+            </div>
+        </header>
+
+        <nav class="tabs-nav">
+            <button class="tab-btn active" onclick="switchTab('tab-users')">Gestione Iscritti</button>
+            <button class="tab-btn" onclick="switchTab('tab-settings')">Impostazioni Comandi</button>
+            <button class="tab-btn" onclick="switchTab('tab-stories')">Storie WhatsApp</button>
+            <button class="tab-btn" onclick="switchTab('tab-remote')">Accesso Remoto</button>
+            <button class="tab-btn" onclick="switchTab('tab-logs')" id="nav-logs">Registro Attività</button>
+            <button class="tab-btn" onclick="switchTab('tab-admins')" id="nav-admins">Gestione Account</button>
+        </nav>
+
+        <main>
+            <div id="tab-users" class="tab-content active">
+                <!-- QR Section: Ora dentro Gestione Iscritti -->
+                <section id="qr-section" class="card" style="text-align: center;">
+                    <h2 style="display: inline-flex; align-items: center; gap: 10px; justify-content: center; width: 100%;">
+                        Accesso a WhatsApp 📱
+                    </h2>
+                    <p>Scannerizza il codice QR dal tuo smartphone per attivare il bot. Questo box verrà nascosto una volta connesso.</p>
+                    <div id="qr-container" style="display: flex; justify-content: center; align-items: center; min-height: 300px; background: white; border-radius: 20px; padding: 2rem; width: fit-content; margin: 2rem auto; box-shadow: 0 10px 40px rgba(0,0,0,0.5);">
+                        <img id="qr-image" src="" alt="In attesa di QR..." style="display: none; max-width: 250px; border-radius: 10px;">
+                        <div id="qr-placeholder" class="loader"></div>
+                    </div>
+                </section>
+
+                <section id="subscribers-section" class="card">
+                    <h2>Gestione Iscritti</h2>
+                    <p>Aggiungi i numeri di telefono con prefisso senza il +, ad esempio <b>39</b>3331234567.</p>
+                    <div class="add-user-bar">
+                        <input type="text" id="new-user-number" placeholder="Es. 393331234567">
+                        <button id="btn-add-user">Aggiungi / Abilita</button>
+                        <button class="btn-secondary" id="btn-refresh">Aggiorna Dati</button>
+                    </div>
+                    <table class="subscribers-table">
+                        <thead>
+                            <tr><th>Numero Telefono</th><th>Stato</th><th>Azioni</th></tr>
+                        </thead>
+                        <tbody id="subscribers-list"></tbody>
+                    </table>
+                </section>
+            </div>
+
+            <div id="tab-settings" class="tab-content" style="display: none;">
+                <section class="card">
+                    <div class="section-header-main">
+                        <h2 style="margin-bottom: 0.5rem;">Impostazioni Comandi & Testi</h2>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 2rem;">Personalizza i comandi standard e i testi automatici del bot per un'esperienza su misura.</p>
+                    </div>
+
+                    <div class="settings-grid-container">
+                        <!-- SEZIONE 1: PIANIFICAZIONE -->
+                        <div class="settings-section">
+                            <h3 class="settings-sect-title">📅 Pianificazione Invio Settimanale</h3>
+                            <p class="settings-sect-desc">Configura il giorno e l'ora in cui il bot invierà la lista film.</p>
+                            <div class="config-row" style="display: flex; gap: 1.5rem; flex-wrap: wrap;">
+                                <div class="config-group">
+                                    <label>Giorno:</label>
+                                    <select id="cfg-cron-day" class="cfg-input" style="min-width: 200px;">
+                                        <option value="1">Ogni Lunedì</option>
+                                        <option value="2">Ogni Martedì</option>
+                                        <option value="3">Ogni Mercoledì</option>
+                                        <option value="4">Ogni Giovedì</option>
+                                        <option value="5">Ogni Venerdì</option>
+                                        <option value="6">Ogni Sabato</option>
+                                        <option value="0">Ogni Domenica</option>
+                                    </select>
+                                </div>
+                                <div class="config-group">
+                                    <label>Orario:</label>
+                                    <div class="modern-time-picker time-picker-container" id="cron-time-trigger">
+                                        <input type="text" id="cfg-cron-time" readonly value="09:00">
+                                        
+                                        <div class="time-picker-popup" id="cron-time-popup">
+                                            <div class="time-column" id="cron-hours-column">
+                                                <div class="time-header">HH</div>
+                                            </div>
+                                            <div class="time-column" id="cron-minutes-column">
+                                                <div class="time-header">MM</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SEZIONE 2: IDENTITÀ BOT -->
+                        <div class="settings-section">
+                            <h3 class="settings-sect-title">👤 Identità Bot (Info)</h3>
+                            <p class="settings-sect-desc">Il testo "Info" nel profilo WhatsApp del bot.</p>
+                            <div class="config-group">
+                                <label>Stato Info Attuale:</label>
+                                <div class="input-with-button" style="display: flex; gap: 0.5rem;">
+                                    <input type="text" id="cfg-profile-info" class="cfg-input" placeholder="Es. Bot ufficiale" style="flex: 1;">
+                                    <button id="btn-update-profile-info" class="btn-action" style="white-space: nowrap; padding: 0.8rem 1rem;">Aggiorna</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SEZIONE 3: COMANDI PREDIFINITI & MESSAGGI -->
+                        <div class="settings-section full-width" style="grid-column: 1 / -1;">
+                            <h3 class="settings-sect-title">⚡ Funzioni di Base (Comandi & Risposte)</h3>
+                            <p class="settings-sect-desc">Imposta le parole chiave (inneschi) e lo spazio per il testo di risposta sotto ogni funzione.</p>
+                            
+                            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                                
+                                <!-- Card: Film -->
+                                <div class="custom-cmd-card" style="margin-bottom: 0;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 0.8rem;">
+                                        <h4 style="margin: 0; color: #818cf8; font-size: 1.1rem; display: flex; align-items: center; gap: 8px;">🍿 Richiesta Film</h4>
+                                    </div>
+                                    <div class="config-group">
+                                        <label>Comando Innesco (Keyword):</label>
+                                        <input type="text" id="cfg-cmd-film" class="cfg-input" placeholder="es: !film" style="width: 100%; max-width: 300px; font-weight: bold; color: #fff; font-size: 1.1rem;">
+                                    </div>
+                                    <div class="config-group" style="margin-bottom: 0;">
+                                        <label>Messaggio di Risposta:</label>
+                                        <p style="font-size: 0.9rem; color: var(--text-muted); margin: 0; padding: 1rem; background: rgba(0,0,0,0.2); border-radius: 8px; border: 1px dashed rgba(255,255,255,0.1);">La risposta è generata automaticamente inviando la locandina e la programmazione della settimana. Non è modificabile manualmente.</p>
+                                    </div>
+                                </div>
+
+                                <!-- Card: Benvenuto -->
+                                <div class="custom-cmd-card" style="margin-bottom: 0;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 0.8rem;">
+                                        <h4 style="margin: 0; color: #3b82f6; font-size: 1.1rem; display: flex; align-items: center; gap: 8px;">👋 Benvenuto ai Nuovi Iscritti</h4>
+                                    </div>
+                                    <div class="config-group">
+                                        <label>Comando Innesco (Keyword):</label>
+                                        <p style="font-size: 0.9rem; color: var(--text-muted); margin: 0; padding: 0.8rem; background: rgba(0,0,0,0.2); border-radius: 8px;">Nessun comando. Il messaggio è inviato automaticamente al cliente quando si iscrive o lo aggiungi dalla rubrica.</p>
+                                    </div>
+                                    <div class="config-group" style="margin-bottom: 0;">
+                                        <label>Messaggio di Benvenuto:</label>
+                                        <textarea id="cfg-msg-welcome" class="cfg-textarea" placeholder="Scrivi il messaggio di benvenuto..." style="width: 100%; min-height: 140px; font-size: 1rem; line-height: 1.5;"></textarea>
+                                    </div>
+                                </div>
+
+                                <!-- Card: Stop -->
+                                <div class="custom-cmd-card" style="margin-bottom: 0;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 0.8rem;">
+                                        <h4 style="margin: 0; color: #f43f5e; font-size: 1.1rem; display: flex; align-items: center; gap: 8px;">🛑 Sospensione Avvisi</h4>
+                                    </div>
+                                    <div class="config-group">
+                                        <label>Comando Innesco (Keyword):</label>
+                                        <input type="text" id="cfg-cmd-stop" class="cfg-input" placeholder="es: !stop" style="width: 100%; max-width: 300px; font-weight: bold; color: #fff; font-size: 1.1rem;">
+                                    </div>
+                                    <div class="config-group" style="margin-bottom: 0;">
+                                        <label>Messaggio di Conferma Disattivazione:</label>
+                                        <textarea id="cfg-msg-stop" class="cfg-textarea" placeholder="Scrivi il messaggio di stop..." style="width: 100%; min-height: 140px; font-size: 1rem; line-height: 1.5;"></textarea>
+                                    </div>
+                                </div>
+
+                                <!-- Card: Start -->
+                                <div class="custom-cmd-card" style="margin-bottom: 0;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 0.8rem;">
+                                        <h4 style="margin: 0; color: #10b981; font-size: 1.1rem; display: flex; align-items: center; gap: 8px;">✅ Riattivazione Avvisi</h4>
+                                    </div>
+                                    <div class="config-group">
+                                        <label>Comando Innesco (Keyword):</label>
+                                        <input type="text" id="cfg-cmd-start" class="cfg-input" placeholder="es: !start" style="width: 100%; max-width: 300px; font-weight: bold; color: #fff; font-size: 1.1rem;">
+                                    </div>
+                                    <div class="config-group" style="margin-bottom: 0;">
+                                        <label>Messaggio di Conferma Riattivazione:</label>
+                                        <textarea id="cfg-msg-start" class="cfg-textarea" placeholder="Scrivi il messaggio di riattivazione..." style="width: 100%; min-height: 140px; font-size: 1rem; line-height: 1.5;"></textarea>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <!-- SEZIONE 5: CHATBOT -->
+                        <div class="settings-section full-width" style="grid-column: 1 / -1;">
+                            <div class="section-header-flex" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                                <div>
+                                    <h3 class="settings-sect-title" style="margin-bottom: 0;">🤖 Chatbot (Risposte Personalizzate)</h3>
+                                    <p class="settings-sect-desc">Aggiungi risposte personalizzate a inneschi specifici scritti dai clienti.</p>
+                                </div>
+                                <button id="btn-add-custom-cmd" class="btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.8rem;">➕ Aggiungi Nuovo</button>
+                            </div>
+                            
+                            <div id="custom-commands-list" class="custom-cmds-container">
+                                <!-- Popolati tramite JS -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="save-bar" style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: flex-end; align-items: center; gap: 1rem;">
+                        <span id="save-hint" style="color: var(--text-muted); font-size: 0.85rem; font-style: italic;">Assicurati di salvare dopo ogni modifica</span>
+                        <button id="btn-save-config" class="btn-save-main" style="padding: 0.8rem 2rem;">Salva Tutte le Modifiche</button>
+                    </div>
+                </section>
+            </div>
+
+            <div id="tab-stories" class="tab-content" style="display: none;">
+                <section class="card">
+                    <h2 style="margin-bottom: 2rem;">📱 Gestione Storie WhatsApp</h2>
+                    
+                    <div class="stories-grid">
+                        <!-- BOX 1: PUBBLICAZIONE MANUALE -->
+                        <div class="story-box">
+                            <h3>🚀 Pubblica Ora</h3>
+                            <p style="font-size: 0.85rem; margin-bottom: 1.5rem;">Invia subito un'immagine o un testo alle tue storie.</p>
+                            
+                            <div class="config-group">
+                                <label>Testo della Storia:</label>
+                                <textarea id="story-text" class="cfg-textarea" placeholder="Cosa bolle in pentola?" style="min-height: 80px;"></textarea>
+                            </div>
+                            
+                            <div class="config-group">
+                                <label>Allega Immagine:</label>
+                                <input type="file" id="story-image" accept="image/*" class="cfg-input" style="padding: 0.5rem;">
+                            </div>
+                            
+                            <button id="btn-post-story" style="width: 100%; margin-top: 1rem;">Pubblica Storia Ora</button>
+                        </div>
+
+                        <!-- BOX 2: AUTOMAZIONE GIORNALIERA -->
+                        <div class="story-box" style="border-left: 1px solid rgba(255,255,255,0.05); padding-left: 2rem;">
+                            <h3>⏰ Automazione Giornaliera</h3>
+                            <p style="font-size: 0.85rem; margin-bottom: 1.5rem;">Pubblica automaticamente i film in programma ogni giorno.</p>
+                            
+                            <div class="config-group" style="display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.03); padding: 0.8rem 1.2rem; border-radius: 12px; width: fit-content;">
+                                <input type="checkbox" id="cfg-daily-status-enabled" style="width: 18px; height: 18px; cursor: pointer;">
+                                <label style="margin: 0; cursor: pointer; font-size: 0.9rem;">Attiva Post Automatico</label>
+                            </div>
+
+                            <div class="config-group" style="margin-top: 1.5rem;">
+                                <label>Orario di Pubblicazione:</label>
+                                <div class="modern-time-picker time-picker-container" id="time-picker-trigger">
+                                    <input type="text" id="cfg-daily-status-time" readonly value="09:00">
+                                    
+                                    <!-- POPUP CUSTOM -->
+                                    <div class="time-picker-popup" id="time-picker-popup">
+                                        <div class="time-column" id="hours-column">
+                                            <div class="time-header">HH</div>
+                                            <!-- JS populated -->
+                                        </div>
+                                        <div class="time-column" id="minutes-column">
+                                            <div class="time-header">MM</div>
+                                            <!-- JS populated -->
+                                        </div>
+                                    </div>
+                                </div>
+                                <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 10px;">Il bot invierà la lista film come immagine/testo alle storie all'ora indicata.</p>
+                            </div>
+
+                            <button id="btn-save-stories-config" class="btn-secondary" style="width: 100%; margin-top: auto;">Salva Automazione</button>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <div id="tab-remote" class="tab-content" style="display: none;">
+                <section class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 1rem;">
+                        <h2 style="margin: 0;">🌐 Accesso Remoto</h2>
+                        <div id="ngrok-status-badge" class="status-badge offline" style="padding: 0.3rem 0.8rem; border-radius: 50px; font-size: 0.75rem; font-weight: 700;">Disattivato</div>
+                    </div>
+                    
+                    <p style="margin-bottom: 2rem; color: var(--text-muted); font-size: 0.95rem;">Configura Ngrok per generare un link sicuro che ti permetta di controllare il Bot dal tuo smartphone anche quando sei lontano dal PC del negozio.</p>
+
+                    <div style="display: grid; grid-template-columns: 1fr; gap: 2rem;">
+                        <div class="settings-section" style="border: 1px solid rgba(255,255,255,0.05); padding: 2rem; border-radius: 15px; background: rgba(0,0,0,0.1);">
+                            <h3 class="settings-sect-title" style="margin-top: 0;">🔑 Configurazione Tunnel</h3>
+                            <div style="display: flex; flex-direction: column; gap: 1.5rem; margin-top: 1.2rem;">
+                                <div class="config-group">
+                                    <label>Ngrok Authtoken:</label>
+                                    <div style="display: flex; gap: 10px; align-items: center;">
+                                        <input type="password" id="cfg-ngrok-token" class="cfg-input" placeholder="Incolla qui il tuo token..." style="width: 100%; max-width: 500px;">
+                                        <button type="button" onclick="toggleTokenVisibility()" class="btn-secondary" style="padding: 10px 15px; white-space: nowrap;">👁️ Mostra</button>
+                                    </div>
+                                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 6px;">Lo trovi nella tua area personale su <a href="https://dashboard.ngrok.com/get-started/your-authtoken" target="_blank" style="color: #60a5fa;">ngrok.com</a></p>
+                                </div>
+                                <div class="config-group">
+                                    <label>Dominio Statico (Opzionale):</label>
+                                    <input type="text" id="cfg-ngrok-domain" class="cfg-input" placeholder="es: cinema-famiglia.ngrok-free.app" style="width: 100%; max-width: 500px;">
+                                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 6px;">Puoi usarlo anche con l'account gratuito (Ngrok permette ora 1 dominio statico gratis).</p>
+                                </div>
+                                
+                                <div style="display: flex; gap: 1rem; margin-top: 1rem; flex-wrap: wrap;">
+                                    <button id="btn-save-ngrok" class="btn-save-main" style="padding: 0.8rem 2rem;">Attiva / Aggiorna Accesso Remoto</button>
+                                    <button id="btn-disconnect-ngrok" class="btn-action" style="background: rgba(244, 63, 94, 0.1); color: #f43f5e; border: 1px dashed rgba(244, 63, 94, 0.5); padding: 0.8rem 2rem;">🛑 Disabilita e Scollega</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="ngrok-info-box" class="settings-section" style="display: none; background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 15px; padding: 2rem;">
+                            <h3 style="color: #10b981; margin-top: 0; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 10px;">🚀 Link Pubblico Attivo</h3>
+                            <p style="color: var(--text-muted); margin-bottom: 1rem;">Usa questo link sul tuo smartphone per accedere:</p>
+                            <div style="display: flex; align-items: center; gap: 12px; background: rgba(0,0,0,0.3); padding: 10px 15px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05);">
+                                <code id="ngrok-public-url" style="font-family: 'Courier New', monospace; color: #fff; flex: 1; word-break: break-all; font-size: 1.1rem;">---</code>
+                                <button onclick="copyNgrokUrl()" class="btn-secondary" style="font-size: 0.8rem; padding: 8px 15px;">Copia</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <div id="tab-logs" class="tab-content">
+                <!-- Esistente Registro Log -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Cronologia Operazioni</h2>
+                        <button id="btn-refresh-logs" class="btn-mini">🔄 Aggiorna</button>
+                    </div>
+                    <div class="log-filter-bar">
+                        <div class="filter-group">
+                            <label>Cerca Azione/Dettagli:</label>
+                            <input type="text" id="filter-log-text" class="filter-input" placeholder="Es. Login, NGrok...">
+                        </div>
+                        <div class="filter-group">
+                            <label>Utente:</label>
+                            <input type="text" id="filter-log-user" class="filter-input" placeholder="Es. Atlantis">
+                        </div>
+                        <div class="filter-group" style="min-width: 140px;">
+                            <label>Giorno:</label>
+                            <input type="date" id="filter-log-date" class="filter-input">
+                        </div>
+                        <div class="filter-group" style="min-width: 80px;">
+                            <label>Ora (HH):</label>
+                            <input type="number" id="filter-log-hour" class="filter-input" min="0" max="23" placeholder="00-23">
+                        </div>
+                        <button id="btn-reset-log-filters" class="btn-reset-filters">Reset</button>
+                    </div>
+
+                    <div class="table-container">
+                        <table id="logs-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 180px;">Data e Ora</th>
+                                    <th style="width: 120px;">Utente</th>
+                                    <th style="width: 200px;">Azione</th>
+                                    <th>Dettagli</th>
+                                </tr>
+                            </thead>
+                            <tbody id="logs-list"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-admins" class="tab-content">
+                <div class="card">
+                    <h2>Gestione Account & Permessi</h2>
+                    <p>Crea o modifica i collaboratori decidendo esattamente a quali funzioni possono accedere.</p>
+                    
+                    <div style="background: rgba(15, 23, 42, 0.4); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem;">
+                        <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
+                            <input type="hidden" id="admin-old-username">
+                            <input type="text" id="admin-username" placeholder="Username (es. Marco)" style="flex:1; min-width: 200px;">
+                            <input type="text" id="admin-password" placeholder="Password" style="flex:1; min-width: 200px;">
+                            <input type="text" id="admin-role-name" placeholder="Nome Ruolo (es. Segretario)" style="flex:1; min-width: 200px;">
+                        </div>
+                        
+                        <div style="margin-bottom: 1.5rem;">
+                            <p style="margin-bottom: 0.8rem; font-weight: 600; color: var(--text-main);">Permessi di Accesso:</p>
+                            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; margin-top: 3px;">
+                                    <input type="checkbox" id="perm-users" checked> 👥 Iscritti
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; margin-top: 3px;">
+                                    <input type="checkbox" id="perm-settings" checked> ⚙️ Impostazioni
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; margin-top: 3px;">
+                                    <input type="checkbox" id="perm-stories" checked> 📱 Storie
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; margin-top: 3px;">
+                                    <input type="checkbox" id="perm-logs"> 📜 Log
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; margin-top: 3px;">
+                                    <input type="checkbox" id="perm-admins"> 🛡️ Account
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <button id="btn-add-admin" style="width: 100%; padding: 0.8rem;">📦 Salva / Aggiorna Account Collaboratore</button>
+                    </div>
+
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Utente</th>
+                                    <th>Password</th>
+                                    <th>Ruolo</th>
+                                    <th>Permessi Attivi</th>
+                                    <th>Azioni</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admins-list">
+                                <!-- Caricati via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Aggiornamento Remoto: Solo Atlantis -->
+                    <div id="update-zone" style="display: none; margin-top: 2rem; padding: 2rem; border: 1px solid rgba(59, 130, 246, 0.4); border-radius: 12px; background: rgba(59, 130, 246, 0.05);">
+                        <h3 style="color: #60a5fa; margin-top: 0; display: flex; align-items: center; gap: 10px;">🚀 Aggiornamento Remoto (OTA)</h3>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">
+                            Inserisci l'URL diretto a un file <strong>.zip</strong> contenente la nuova versione del bot. Il sistema la scarichera' e si riavviera' per installarla.
+                        </p>
+                        
+                        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                            <input type="text" id="update-url" placeholder="https://esempio.com/bot-update.zip" style="flex: 2; min-width: 250px; border-color: rgba(59, 130, 246, 0.3);">
+                            <button id="btn-remote-update" style="flex: 1; min-width: 150px; background: #3b82f6;">📦 Installa Aggiornamento</button>
+                        </div>
+                    </div>
+
+                    <!-- Zona Pericolo: Solo Atlantis -->
+                    <div id="danger-zone" style="display: none; margin-top: 3rem; padding: 2rem; border: 2px dashed rgba(239, 68, 68, 0.4); border-radius: 12px; background: rgba(239, 68, 68, 0.05);">
+                        <h3 style="color: #fca5a5; margin-top: 0; display: flex; align-items: center; gap: 10px;">⚠️ Zona Pericolo (Sola lettura Atlantis)</h3>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">
+                            L'azione di seguito è <strong>IRREVERSIBILE</strong>. Verrà eliminato l'intero bot dal PC, inclusi tutti i dati, le configurazioni, gli iscritti e il codice sorgente. Il server si spegnerà immediatamente.
+                        </p>
+                        
+                        <div style="display: flex; flex-direction: column; gap: 1rem;">
+                            <label style="font-size: 0.85rem; font-weight: 600;">Scrivi <span style="color: #fca5a5; background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 4px;">ELIMINA BOT DEFINITIVAMENTE</span> per confermare:</label>
+                            <input type="text" id="self-destruct-confirm" placeholder="Inserisci la frase di conferma" style="border-color: rgba(239, 68, 68, 0.3); background: rgba(0,0,0,0.2);">
+                            <button id="btn-self-destruct" class="btn-danger" style="padding: 1rem; font-weight: 800; letter-spacing: 1px;">💣 DISTRUGGI BOT DEFINITIVAMENTE</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer style="margin-top: 3rem; text-align: center; padding: 2rem 0; border-top: 1px solid rgba(255,255,255,0.05); color: var(--text-muted); font-size: 0.85rem;">
+            <p>Sviluppato da <b>Gabriele Zarantonello</b> • Supporto: 3497426155</p>
+        </footer>
+    </div>
+    
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

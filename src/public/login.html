@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Cinema Famiglia Bot</title>
+    <link href="style.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .login-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 80vh;
+        }
+        .login-card {
+            width: 100%;
+            max-width: 400px;
+            animation: slideUp 0.6s ease-out;
+        }
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .login-header img {
+            width: 80px;
+            margin-bottom: 1rem;
+        }
+        .login-footer {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        #login-error {
+            background: rgba(239, 68, 68, 0.1);
+            color: #fca5a5;
+            padding: 0.75rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            text-align: center;
+            display: none;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="login-wrapper">
+            <div class="card login-card">
+                <div class="login-header">
+                    <h1>WhatsApp Bot 🍿</h1>
+                    <p>Inserisci le tue credenziali per accedere alla Dashboard</p>
+                </div>
+
+                <div id="login-error">Credenziali non valide. Riprova.</div>
+
+                <form id="login-form">
+                    <div class="config-group" style="width: 100%; display: block;">
+                        <label for="username">Nome Utente</label>
+                        <input type="text" id="username" class="cfg-input" style="width: 100%; max-width: none; box-sizing: border-box;" placeholder="" required autocomplete="username">
+                    </div>
+                    <div class="config-group" style="width: 100%; display: block; margin-top: 1rem;">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" class="cfg-input" style="width: 100%; max-width: none; box-sizing: border-box;" placeholder="" required autocomplete="current-password">
+                        <label style="margin-top: 0.8rem; display: flex; align-items: center; gap: 10px; cursor: pointer; width: fit-content;">
+                            <input type="checkbox" id="toggle-password">
+                            <span style="font-size: 0.85rem; color: var(--text-muted); position: relative; top: 1px; user-select: none;">Mostra Password</span>
+                        </label>
+                    </div>
+                    <div style="margin-top: 2rem;">
+                        <button type="submit" id="btn-login" style="width: 100%;">Accedi Ora 🚀</button>
+                    </div>
+                </form>
+
+                <div class="login-footer">
+                    Sviluppato da Gabriele Zarantonello
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="login-script.js"></script>
+</body>
+</html>

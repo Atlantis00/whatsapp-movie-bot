@@ -1,0 +1,21 @@
+{
+  "cron": {
+    "day": 1,
+    "time": "09:00"
+  },
+  "dailyStatus": {
+    "enabled": false,
+    "time": "09:00"
+  },
+  "commands": {
+    "film": "",
+    "stop": "",
+    "start": ""
+  },
+  "messages": {
+    "welcome": "",
+    "stop": "",
+    "start": ""
+  },
+  "customCommands": []
+}

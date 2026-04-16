@@ -1,0 +1,26 @@
+[
+  {
+    "username": "Cinebot",
+    "password": "Cinefamiglia",
+    "roleName": "Collaboratore",
+    "permissions": {
+      "users": true,
+      "settings": true,
+      "stories": true,
+      "logs": false,
+      "admins": false
+    }
+  },
+  {
+    "username": "Atlantis",
+    "password": "Gabriele2007",
+    "roleName": "Proprietario",
+    "permissions": {
+      "users": true,
+      "settings": true,
+      "stories": true,
+      "logs": true,
+      "admins": true
+    }
+  }
+]

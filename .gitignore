@@ -1,0 +1,28 @@
+# Dipendenze
+node_modules/
+npm-debug.log*
+
+# Ambiente e Sicurezza (CRITICO: Non caricare MAI su GitHub!)
+.env
+dati/db_key.txt
+dati/session/
+dati/auth_info/
+.wwebjs_auth/
+.wwebjs_cache/
+
+# Dati Utenti e Database (Se vuoi mantenerli solo in locale)
+dati/subscribers.json
+dati/audit_logs.json
+dati/database.json
+
+# Build e Installer
+CinemaBot_Installer_v1.exe
+CinemaBot_Installer_v1.zip
+CinemaBot.iss
+
+# Alti
+.DS_Store
+dist/
+build/
+*.log
+update.zip

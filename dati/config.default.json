@@ -1,0 +1,21 @@
+{
+    "cron": {
+        "day": 1,
+        "time": "12:00"
+    },
+    "dailyStatus": {
+        "enabled": true,
+        "time": "09:00"
+    },
+    "commands": {
+        "film": "!film",
+        "stop": "!stop",
+        "start": "!start"
+    },
+    "messages": {
+        "welcome": "Benvenuto nel Cinema Famiglia! 🍿🎬",
+        "stop": "Avvisi disattivati. Scrivi !start per riattivarli.",
+        "start": "Avvisi settimanali riattivati! Ben tornato."
+    },
+    "customCommands": []
+}
